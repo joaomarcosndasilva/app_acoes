@@ -46,8 +46,9 @@ def graficos_analises():
             sleep(0.5)
         st.error('Nenhuma Rede Neural para previsão ainda, por favor, alguns + alguns dias', icon=icone_erro)
 
-st.title('Análise das Ações do IBOV')
-st.write('Essa aplicação faz uma análise dos principais papeis que compõe o índice do IBOVESPA')
+st.title('Análise de ativos da B3')
+st.write('by J. Brutus')
+st.subheader('Essa aplicação faz uma análise dos principais papeis que compõe o índice do IBOVESPA')
 
 st.sidebar.success('ANÁLISES COM O  YAHOO FINANCE', icon=icone_info)
 
