@@ -59,14 +59,17 @@ def analisar_ativo(codigo_ativo='CPLE6', periodo_analisado='9'):
     import pandas as pd
     #import yfinance as yf
     #yf.pdr_override()
-    global df, lr, y_de_amanha
-    ativo, periodo = codigo_ativo, periodo_analisado
+    global df, lr, y_de_amanha, df_inicial, x_features, scaler, total, teste, treino, validacao, coeficiente, df2, ativo
+
+    ativo, periodo = codigo_ativo, periodo_analisado,
 
     #ticket = f'{ativo}.SA'
     #ticketII = yf.Ticker(ticket)
     #df_inicial = ticketII.history(period=f'{periodo}y')
-    #st.write(df.columns)
-    df_inicial = df.drop(['Dividends', 'Stock Splits'], axis=1)
+    #ativo = ativo
+    df_inicial = df[:]
+    df = df_inicial[:]
+    df = df.drop(['Dividends', 'Stock Splits'], axis=1)
     df['mm9'] = df['Close'].rolling(9).mean().round(2)
     df['mm21'] = df['Close'].rolling(21).mean().round(2)
     df_inicial = df[:]
@@ -83,7 +86,8 @@ def analisar_ativo(codigo_ativo='CPLE6', periodo_analisado='9'):
     teste_inicial = total_inicial - 15
 
     ########################################################################################################################
-    st.write(f'Treino 0:{treino} - Teste {treino}:{teste} - Validação {teste}:{total}')
+    st.write('A SEPARAÇÃO DOS DADOS SEGUE A SEGUINTE DIVISÃO:')
+    st.write(f'\nTreino 0:{treino} - Teste {treino}:{teste} - Validação {teste}:{total}')
     st.write(f'Treino 0:{treino_inicial} - Teste {treino_inicial}:{teste_inicial} - Validação {teste_inicial}:{total_inicial}')
     ########################################################################################################################
 
@@ -137,12 +141,12 @@ def analisar_ativo(codigo_ativo='CPLE6', periodo_analisado='9'):
     y_test = y_labels[treino:teste]
     y_test_inicial = y_labels[treino_inicial:teste_inicial]
 
-    print()
-    st.write(f'O modelo aprenderá com os dados da linha 0 a {treino} das variáveis {list(x_features.columns)}')
+
+    st.write(f'\nO modelo aprenderá com os dados da linha 0 a {treino} das variáveis {list(x_features.columns)}')
     st.write(f'O modelo testará com os dados da linha {treino} a {teste} da variável Close')
-    print()
-    print(f'O modelo aprenderá com os dados da linha 0 a {treino_inicial} das variáveis {list(x_features_inicial.columns)}')
-    print(f'O modelo testará com os dados da linha {treino_inicial} a {teste_inicial} da variável Close')
+    st.write('\nNa Setunda Parte: ')
+    st.write(f'O modelo aprenderá com os dados da linha 0 a {treino_inicial} das variáveis {list(x_features_inicial.columns)}')
+    st.write(f'O modelo testará com os dados da linha {treino_inicial} a {teste_inicial} da variável Close')
 
     from sklearn.linear_model import LinearRegression
     from sklearn.metrics import r2_score
@@ -154,8 +158,8 @@ def analisar_ativo(codigo_ativo='CPLE6', periodo_analisado='9'):
     # lr.fit()
     coeficiente = r2_score(y_test, y_predito)
 
-    f'''O coeficiente é de {coeficiente * 100:.2f}%, isto é,  {coeficiente * 100:.2f}% das variações no valor dopreço futuro de
-    Fechamento (Close) é explicada pela variação nas variávies {list(x_features.columns)} do dia anterior'''
+    st.write(f'''O coeficiente é de {coeficiente * 100:.2f}%, isto é,  {coeficiente * 100:.2f}% das variações no valor dopreço futuro de
+    Fechamento (Close) é explicada pela variação nas variávies {list(x_features.columns)} do dia anterior''')
 
     previsao = x_features_normal[teste:total]
     dia = df['Date'][teste:total]
@@ -170,13 +174,6 @@ def analisar_ativo(codigo_ativo='CPLE6', periodo_analisado='9'):
 
     df2 = pd.DataFrame({'Data': dia, 'Cotacao': real, 'Previsto': y_pred})
     df2['Cotacao'] = df2['Cotacao'].shift(+1)
-    # Nessa linha acima, estamos devolvendo as cotações ao valor verdadeiro, isto é, desfazemos o que fizemos acima
-
-    # df3 = pd.DataFrame({'Data':dia_hoje, 'Cotacao':real_hoje, 'Previsto':y_de_amanha})
-    # df3['Cotacao'] = df2['Cotacao'].shift(+1)
-    #df3 = df2.dropna()
-    #df3['Erro'] = df3['Cotacao'] - df3['Previsto']
-    #df3.round(2)
 
     import matplotlib.pyplot as plt
     import matplotlib.dates as mdates
@@ -187,7 +184,7 @@ def analisar_ativo(codigo_ativo='CPLE6', periodo_analisado='9'):
     ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
     ax.xaxis.set_tick_params(rotation=30)
 
-    ax.set_title(f'Ativo: {ativo} -> {round(coeficiente * 100, 2)}%- By J. Brutus', fontsize=16)
+    ax.set_title(f'Teste de Previsão dos ultimos 15 pregões do ativo {ativo.replace(".SA", "")}\nCoeficiente R2 de {round(coeficiente * 100, 2)}% - By J. Brutus', fontsize=24)
     ax.set_ylabel('Preço do ativo em R$', fontsize=14)
     ax.plot(df2['Data'], df2['Cotacao'], marker='o', label='Cotação Real', color='blue')
     ax.plot(df2['Data'], df2['Previsto'], marker='o', label='Cotação Prevista', color='red')
@@ -195,8 +192,53 @@ def analisar_ativo(codigo_ativo='CPLE6', periodo_analisado='9'):
     plt.grid()
     plt.show()
     st.pyplot(figura)
-    st.write('Tem erros, eu sei, podem me passar que eu vou arrumando com o tempo. Abraço')
-    return figura
+    rodar_nova()
+
+
+def rodar_nova():
+  global x_norm
+  import pandas as pd
+  import datetime
+  import matplotlib.pyplot as plt
+  import matplotlib.dates as mdates
+
+  df = df_inicial
+
+  df = df.drop(['Date','Volume' ], axis=1) # vai até o 2237
+  df = df.dropna()
+  y = df['Close']
+  x = df.drop('Close', axis=1)
+
+  scaler.fit(x)
+  x_norm = scaler.fit_transform(x)
+
+  y_previsto = lr.predict(x_norm[-1:])
+  hoje = datetime.date.today()
+
+  previsao_hoje = pd.DataFrame({'Data':hoje, 'Preco Previsto': y_previsto})
+
+  ###############################################################################
+
+
+
+  figura, ax = plt.subplots(figsize=(16, 8))
+
+  ax.xaxis.set_major_formatter(mdates.DateFormatter('%d/%m/%Y'))
+  ax.xaxis.set_major_locator(mdates.DayLocator(interval=1))
+  ax.xaxis.set_tick_params(rotation=30)
+
+  ax.set_title(f'\n\nPrevisão do preço de fechamento para hoje, {hoje.strftime("%d/%m/%Y")} (EM VERDE), do ativo {ativo.replace(".SA", "")}\nCoeficiente R2 de {round(coeficiente * 100, 2)}% - By J. Brutus', fontsize=20)
+  ax.set_ylabel('Preço do ativo em R$', fontsize=14)
+  ax.plot(df2['Data'], df2['Cotacao'], marker='o', label='Cotação Real', color='blue')
+  ax.plot(df2['Data'], df2['Previsto'], marker='o', label='Cotação Prevista', color='red')
+  ax.plot(previsao_hoje['Data'], previsao_hoje['Preco Previsto'], marker='o', color='green')
+
+  plt.grid()
+  plt.show()
+  st.pyplot(figura)
+
+
+  return
 
 st.title('Análise de ativos da B3 - Versão de teste 1.0')
 st.write('by J. Brutus')
