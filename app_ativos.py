@@ -30,17 +30,19 @@ def graficos_analises():
         st.info('Gráfico de dividendos!', icon=icone_sucess)
         st.line_chart(df.Dividends)
     st.sidebar.warning('PREVER PREÇOS FUTUROS', icon=icone_warning)
-    cb_kbest = st.sidebar.checkbox('KBEST')
+    cb_kbest = st.sidebar.checkbox('Regressão Linear')
     if cb_kbest:
         with st.spinner('Aguarde...'):
             sleep(0.5)
-        st.error('O KBEST ainda não estão funcionando, por favor, aguarde + alguns dias', icon=icone_erro)
-    cb_fbprophet = st.sidebar.checkbox('FBPROPHET')
+        st.error('A Regressão Linear ainda não está funcionando, por favor, aguarde + alguns dias', icon=icone_erro)
+
+    cb_fbprophet = st.sidebar.checkbox('FB PROPHET (Previsor do Facebook)')
     if cb_fbprophet:
         with st.spinner('Aguarde...'):
             sleep(0.5)
-        st.error('O FBPROPHET ainda não estão funcionando, por favor, aguarde + alguns dias', icon=icone_erro)
-    cb_neural = st.sidebar.checkbox('REDES NEURAIS')
+        st.error('O FB PROPHET ainda não estão funcionando, por favor, aguarde + alguns dias', icon=icone_erro)
+
+    cb_neural = st.sidebar.checkbox('BRUTUS NEURAL')
     if cb_neural:
         with st.spinner('Aguarde...'):
             sleep(0.5)
@@ -48,9 +50,10 @@ def graficos_analises():
 
 st.title('Análise de ativos da B3')
 st.write('by J. Brutus')
-st.subheader('Essa aplicação faz uma análise dos principais papeis que compõe o índice do IBOVESPA')
+st.subheader('Essa aplicação faz uma análise de todos os ativos da B3. Assim como bolas internacionais, apenas digitando o ativo'
+             '')
 
-st.sidebar.success('ANÁLISES COM O  YAHOO FINANCE', icon=icone_info)
+st.sidebar.success('ANÁLISES DE ATIVOS', icon=icone_info)
 
 select_modo = st.sidebar.radio("Selecione como você quer ver a análise", ("Lista de ativos", "Digitar o código"))
 
