@@ -1,8 +1,8 @@
-def analisar_ativo(codigo_ativo='BEEF3', periodo_analisado='9'):
+def analisar_ativo(codigo_ativo='MGLU3', periodo_analisado='9'):
     import pandas as pd
     import yfinance as yf
     yf.pdr_override()
-    global df3, lr, y_de_amanha
+    global df, lr, y_de_amanha
     ativo, periodo = codigo_ativo, periodo_analisado
 
     ticket = f'{ativo}.SA'
@@ -144,6 +144,4 @@ def analisar_ativo(codigo_ativo='BEEF3', periodo_analisado='9'):
     # fig, ax = plt.subplots(figsize=(16,8))
     ###################################################################################################
 
-
 analisar_ativo()
-
