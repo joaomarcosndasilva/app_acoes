@@ -57,8 +57,8 @@ def graficos_analises():
 def analisar_ativo(codigo_ativo='CPLE6', periodo_analisado='9'):
     global figura, df
     import pandas as pd
-    #import yfinance as yf
-    #yf.pdr_override()
+    import yfinance as yf
+    yf.pdr_override()
     global df, lr, y_de_amanha
     ativo, periodo = codigo_ativo, periodo_analisado
 
